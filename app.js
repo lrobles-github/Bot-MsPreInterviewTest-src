@@ -47,16 +47,26 @@ const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' +
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 .matches('Greeting', (session) => {
-    session.send('You reached Greeting intent, you said \'%s\'.', session.message.text);
+    session.send('Oh, hello, again. Would you like to play a game or hear a joke?');
 })
 .matches('Help', (session) => {
-    session.send('You reached Help intent, you said \'%s\'.', session.message.text);
+    session.send('Try saying something like "Play game" or "Tell me a joke"');
 })
 .matches('Cancel', (session) => {
-    session.send('You reached Cancel intent, you said \'%s\'.', session.message.text);
+    session.send('Ok, I am shutting up now...');
 })
 .matches('Play', (session) => {
-    session.send("You reached Play intent");
+    session.send("Let's play Rock, Paper, Scissors!");
+    
+})
+.matches('Joke', (session) => {
+    jokes = [
+        'The first logician says "I don\'t know", the second logician says "I don\'t know", the third logician says "Yes!"', 
+        'Entropy isn\'t what it used to be.',
+        'Schrödinger\'s cat walks into a bar. And doesn\'t',
+    ]
+    jokeSelector = getRandomInt(3);
+    session.send(jokes[jokeSelector]);
 })
 .onDefault((session) => {
     session.send('Sorry, I did not understand \'%s\'.', session.message.text);
