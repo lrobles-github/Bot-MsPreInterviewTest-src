@@ -44,6 +44,12 @@ var luisAPIHostName = process.env.LuisAPIHostName || 'westus.api.cognitive.micro
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
 // Main dialog with LUIS
+
+// Simple function to make random choice of joke or game choice. Note that it only returns 0, 1, or 2
+function getRandomInt() {
+    return Math.floor(Math.random() * 3);
+}
+
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 .matches('Greeting', (session) => {
@@ -57,15 +63,17 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 })
 .matches('Play', (session) => {
     session.send("Let's play Rock, Paper, Scissors!");
-    
+    botChoice = getRandomInt();
+    // game functionality here
 })
 .matches('Joke', (session) => {
-    jokes = [
+    var jokes = [
         'The first logician says "I don\'t know", the second logician says "I don\'t know", the third logician says "Yes!"', 
         'Entropy isn\'t what it used to be.',
         'Schrödinger\'s cat walks into a bar. And doesn\'t',
-    ]
-    jokeSelector = getRandomInt(3);
+    ];
+
+    jokeSelector = getRandomInt();
     session.send(jokes[jokeSelector]);
 })
 .onDefault((session) => {
