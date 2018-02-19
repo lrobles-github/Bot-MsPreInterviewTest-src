@@ -61,7 +61,7 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 })
 .matches('Play', (session) => {
     session.send("Let's play Rock, Paper, Scissors.");    
-    bot.beginDialog('play');
+    session.beginDialog('play');
 })
 .matches('Joke', (session) => {
     var jokes = [
