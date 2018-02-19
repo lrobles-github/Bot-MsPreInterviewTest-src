@@ -63,11 +63,11 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 })
 .matches('Play', (session) => {
     var choices = ['rock', 'paper', 'scissors',]
-    session.send("Let's play Rock, Paper, Scissors. Pick one!");
+    session.send("Let's play Rock, Paper, Scissors.");
+    builder.Prompts.text('Pick One!)');
     session.dialogData.userChoice = session.message;
     botChoice = getRandomInt();
     session.send(`I said "${choices[botChoice]}", you said "${session.dialogData.userChoice}". I win! I tricked you. I always win. ;)`);
-
 })
 .matches('Joke', (session) => {
     var jokes = [
