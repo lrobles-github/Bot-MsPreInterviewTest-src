@@ -62,9 +62,12 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     session.send('Ok, I am shutting up now...');
 })
 .matches('Play', (session) => {
-    session.send("Let's play Rock, Paper, Scissors!");
+    var choices = ['rock', 'paper', 'scissors',]
+    session.send("Let's play Rock, Paper, Scissors. Pick one!");
+    session.dialogData.userChoice = session.message;
     botChoice = getRandomInt();
-    // game functionality here
+    session.send(`I said "${choices[botChoice]}", you said "${session.dialogData.userChoice}". I win! I tricked you. I always win. ;)`);
+
 })
 .matches('Joke', (session) => {
     var jokes = [
