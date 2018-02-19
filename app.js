@@ -22,33 +22,31 @@ var connector = new builder.ChatConnector({
 // Listen for messages from users 
 server.post('/api/messages', connector.listen());
 
-/*----------------------------------------------------------------------------------------
-* Bot Storage: This is a great spot to register the private state storage for your bot. 
-* We provide adapters for Azure Table, CosmosDb, SQL Azure, or you can implement your own!
-* For samples and documentation, see: https://github.com/Microsoft/BotBuilder-Azure
-* ---------------------------------------------------------------------------------------- */
+// Storage setup
 
 var tableName = 'botdata';
 var azureTableClient = new botbuilder_azure.AzureTableClient(tableName, process.env['AzureWebJobsStorage']);
 var tableStorage = new botbuilder_azure.AzureBotStorage({ gzipData: false }, azureTableClient);
 
-// Create your bot with a function to receive messages from the user
+// Create bot
 var bot = new builder.UniversalBot(connector);
 bot.set('storage', tableStorage);
 
-// Make sure you add code to validate these fields
+// These would need validation
 var luisAppId = process.env.LuisAppId;
 var luisAPIKey = process.env.LuisAPIKey;
 var luisAPIHostName = process.env.LuisAPIHostName || 'westus.api.cognitive.microsoft.com';
 
+// Set LUIS API URL
 const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
 
-// Main dialog with LUIS
 
-// Simple function to make random choice of joke or game choice. Note that it only returns 0, 1, or 2
+// Simple helper function to make random choice of joke or game choice. Note that it only returns 0, 1, or 2
 function getRandomInt() {
     return Math.floor(Math.random() * 3);
 }
+
+// Main dialog with LUIS
 
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
 var intents = new builder.IntentDialog({ recognizers: [recognizer] })
@@ -62,12 +60,8 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     session.send('Ok, I am shutting up now...');
 })
 .matches('Play', (session) => {
-    var choices = ['rock', 'paper', 'scissors',]
-    session.send("I would say let's play Rock, Paper, Scissors. But I am not set up to play any games yet. :(");
-    builder.Prompts.text(session, 'Pick One!)');
-    session.dialogData.userChoice = toString(message.text);
-    botChoice = getRandomInt();
-    session.send(`I said "${choices[botChoice]}", you said "${session.dialogData.userChoice}". I win! I tricked you. I always win. ;)`);
+    session.send("Let's play Rock, Paper, Scissors.");    
+    bot.beginDialog('play');
 })
 .matches('Joke', (session) => {
     var jokes = [
@@ -83,5 +77,20 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
     session.send('Sorry, I did not understand \'%s\'.', session.message.text);
 });
 
+// bot default dialog
 bot.dialog('/', intents);    
+
+// bot play dialog
+bot.dialog('play', [
+    function(session) {
+        builder.Prompts.text(session, "Make your choice:");
+    },
+    function(session, results) {
+        var choices = ['rock', 'paper', 'scissors',]
+        botChoice = getRandomInt();
+        userChoice = results.response;
+        session.send(`I said "${choices[botChoice]}", you said "${userChoice}".`);
+        session.endDialog('I win! I was designed to win.');
+    }
+]);
 
