@@ -90,7 +90,7 @@ bot.dialog('play', [
         botChoice = getRandomInt();
         userChoice = results.response;
         session.send(`I said "${choices[botChoice]}", you said "${userChoice}".`);
-        session.endDialog('I win! I was designed to win.');
+        session.endDialog('I win! I was designed to win. ;)');
     }
 ]);
 
